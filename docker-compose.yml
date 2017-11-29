@@ -4,8 +4,9 @@ services:
   elasticsearch01:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0
     environment:
-      - CLUSTER_NAME=conex-moose
-      - BOOTSTRAP_MEMORY_LOCK=true
+      - cluster.name=conex-moose
+      - node.name=elasticsearch01
+      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -22,8 +23,9 @@ services:
   elasticsearch02:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0
     environment:
-      - CLUSTER_NAME=conex-moose
-      - BOOTSTRAP_MEMORY_LOCK=true
+      - cluster.name=conex-moose
+      - node.name=elasticsearch02
+      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elasticsearch01"
     ulimits:
@@ -39,8 +41,9 @@ services:
   elasticsearch03:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0
     environment:
-      - CLUSTER_NAME=conex-moose
-      - BOOTSTRAP_MEMORY_LOCK=true
+      - cluster.name=conex-moose
+      - node.name=elasticsearch03
+      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "discovery.zen.ping.unicast.hosts=elasticsearch01"
     ulimits:
