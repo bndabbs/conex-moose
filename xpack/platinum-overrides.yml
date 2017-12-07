@@ -1,0 +1,127 @@
+---
+version: '3.2'
+services:
+  kibana01:
+    environment:
+      - ELASTICSEARCH_URL=https://elasticsearch01:9200
+      - SERVER_SSL_CERTIFICATEAUTHORITIES=$KIBANA_CERTS_DIR/ca/ca.crt
+      - SERVER_SSL_CERT=$KIBANA_CERTS_DIR/kibana01/kibana01.crt
+      - SERVER_SSL_KEY=$KIBANA_CERTS_DIR/kibana01/kibana01.key
+      - ELASTICSEARCH_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/elasticsearch01/elasticsearch01.crt
+      - ELASTICSEARCH_SSL_KEY=$KIBANA_CERTS_DIR/elasticsearch01/elasticsearch01.key
+      - ELASTICSEARCH_USERNAME=kibana
+      - ELASTICSEARCH_PASSWORD=$KIBANA_PASSWORD
+    volumes:
+      - type: bind
+        source: ./xpack/certs
+        target: $KIBANA_CERTS_DIR
+        read_only: true
+  elasticsearch01:
+    image: docker.elastic.co/elasticsearch/elasticsearch-platinum:6.0.1
+    environment:
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$ES_CERTS_DIR/elasticsearch01/elasticsearch01.crt
+      - xpack.ssl.key=$ES_CERTS_DIR/elasticsearch01/elasticsearch01.key
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    volumes:
+      - type: volume
+        source: esdata01
+        target: /usr/share/elasticsearch/data
+      - type: bind
+        source: ./xpack/certs
+        target: $ES_CERTS_DIR
+        read_only: true
+  elasticsearch02:
+    image: docker.elastic.co/elasticsearch/elasticsearch-platinum:6.0.1
+    environment:
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$ES_CERTS_DIR/elasticsearch02/elasticsearch02.crt
+      - xpack.ssl.key=$ES_CERTS_DIR/elasticsearch02/elasticsearch02.key
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    volumes:
+      - type: volume
+        source: esdata02
+        target: /usr/share/elasticsearch/data
+      - type: bind
+        source: ./xpack/certs
+        target: $ES_CERTS_DIR
+        read_only: true
+  elasticsearch03:
+    image: docker.elastic.co/elasticsearch/elasticsearch-platinum:6.0.1
+    environment:
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$ES_CERTS_DIR/elasticsearch03/elasticsearch03.crt
+      - xpack.ssl.key=$ES_CERTS_DIR/elasticsearch03/elasticsearch03.key
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    volumes:
+      - type: volume
+        source: esdata03
+        target: /usr/share/elasticsearch/data
+      - type: bind
+        source: ./xpack/certs
+        target: $ES_CERTS_DIR
+        read_only: true
+  logstash01:
+    environment:
+      - XPACK_MONITORING_ENABLED=true
+      - XPACK_MONITORING_ELASTICSEARCH_PASSWORD=$LOGSTASH_PASSWORD
+      - XPACK_MONITORING_ELASTICSEARCH_URL=https://elasticsearch01:9200
+      - XPACK_MONITORING_ELASTICSEARCH_SSL_CA=$LS_CERTS_DIR/ca/ca.crt
+      - CONFIG_RELOAD_AUTOMATIC=true
+      - "LS_JAVA_OPTS=-Xms8g -Xmx8g"
+    volumes:
+      - type: bind
+        source: ./xpack/certs
+        target: $LS_CERTS_DIR
+        read_only: true
+
+  # Run short-lived containers to set up Logstash and Kibana
+  setup_logstash:
+    image: centos:7
+    volumes:
+      - type: bind
+        source: ./xpack/scripts
+        target: /usr/local/bin
+        read_only: true
+      - type: bind
+        source: ./xpack/certs
+        target: $LS_CERTS_DIR
+        read_only: true
+    command: ['/bin/bash', '-c', 'cat /usr/local/bin/setup-logstash.sh | tr -d "\r" | bash']
+    environment:
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - LOGSTASH_PASSWORD=$LOGSTASH_PASSWORD
+      - INGEST_USER=$INGEST_USER
+      - INGEST_PASSWORD=$INGEST_PASSWORD
+    networks:
+      - default
+    depends_on:
+      - "elasticsearch01"
+
+  setup_kibana:
+    image: centos:7
+    volumes:
+      - type: bind
+        source: ./xpack/scripts
+        target: /usr/local/bin
+        read_only: true
+    command: ['/bin/bash', '-c', 'cat /usr/local/bin/setup-kibana.sh | tr -d "\r" | bash']
+    environment:
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - KIBANA_PASSWORD=$KIBANA_PASSWORD
+    networks:
+      - default
+    depends_on:
+      - "elasticsearch01"

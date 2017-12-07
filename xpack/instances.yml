@@ -1,0 +1,31 @@
+instances:
+  - name: kibana01
+    dns:
+      - kibana01
+      - localhost
+    ip:
+      - 127.0.0.1
+  - name: logstash01
+    dns:
+      - logstash01
+      - localhost
+    ip:
+      - 127.0.0.1
+  - name: elasticsearch01
+    dns:
+      - elasticsearch01
+      - localhost
+    ip:
+      - 127.0.0.1
+  - name: elasticsearch02
+    dns:
+      - elasticsearch02
+      - localhost
+    ip:
+      - 127.0.0.1
+  - name: elasticsearch03
+    dns:
+      - elasticsearch03
+      - localhost
+    ip:
+      - 127.0.0.1
