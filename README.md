@@ -19,6 +19,8 @@ I am running Docker 17.09.0-ce with Docker Compose 1.17.1
 
 ## Getting Started
 
+Setup your storage. It's outside of the scope of this readme, but I recommend using SSD storage and that you [update your storage driver](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/)
+
 Create an external network and grab the subnet for future reference:
 ```
 docker network create elastic
