@@ -19,6 +19,8 @@ I am running Docker 17.09.0-ce with Docker Compose 1.17.1
 
 ## Getting Started
 
+Setup your storage. It's outside of the scope of this readme, but I recommend using SSD storage and that you [update your storage driver](https://docs.docker.com/engine/userguide/storagedriver/device-mapper-driver/)
+
 Create an external network and grab the subnet for future reference:
 ```
 docker network create elastic
@@ -28,15 +30,15 @@ docker network inspect elastic
 
 You'll need to use the gateway address listed if you want to talk from the containers to the host. I use that when I'm reading from a Kafka topic on the host.
 
-To run with X-Pack basic features:
+**To run with X-Pack basic features:**
 
 ```
 docker-compose -f docker-compose.yml -p conex-moose up -d
 ```
 
-To run with X-Pack platinum features:
+**To run with X-Pack platinum features:**
 
-Open [xpack/.env](xpack/.env) in your favorite editor (Vim, duh) and change the passwords to something of your own invention.
+Open [xpack/.env](xpack/.env) in your favorite editor (Vim, duh) and change the passwords to something of your own invention. Then, fire it up:
 
 ```
 cd xpack
